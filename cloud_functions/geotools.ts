@@ -906,8 +906,8 @@ const geotools = function ($) {
         let cumLat = 0;
         let cumLon = 0;
         for (let coordinate in polygonPoints) {
-            cumLat += coordinate[0];
-            cumLon += coordinate[1];
+            cumLat += Number(coordinate[0]);
+            cumLon += Number(coordinate[1]);
         }
         return [cumLat / polygonPoints.length, cumLon / polygonPoints.length];
     };

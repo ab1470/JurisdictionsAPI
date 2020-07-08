@@ -32,3 +32,10 @@
 
 # Credentials for Firebase Admin
 /FirebaseAdminKey.json
+
+# Node Modules
+functions/node_modules/
+
+# Javascript files compiled by `firebase deploy`
+functions/lib
+/functions/src/
