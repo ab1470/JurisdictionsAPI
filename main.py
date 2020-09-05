@@ -1,81 +1,53 @@
-import json
+from __future__ import print_function, unicode_literals
 
-import firebase_admin
-from firebase_admin import credentials, firestore
-import google.cloud.exceptions
+from data_manager import FirebaseClient
+from main_menu import MainMenu
+from prompts.pyinquirer_common import clear
 
-cred = credentials.Certificate('./FirebaseAdminKey.json')
-default_app = firebase_admin.initialize_app(cred)
-db = firestore.client()
+from containers import Views, Configs
 
-# sample_json = """
-# {
-#     "city": "Chicago",
-#     "county": "Cook"
-# }
-# """
-#
-# sample = json.loads(sample_json)
-# sample_city = sample["city"]
-# sample_county = sample["county"]
-#
-# doc_ref = db.collection(u'states').document(u'illinois')
-# doc_ref.set({
-#     u'city': sample_city,
-#     u'county': sample_county,
-# })
-
-illinois_ref = db.collection(u'countries').document(u'usa')\
-    .collection(u'administrative_areas').document(u'illinois')
-
-cook_cty_ref = illinois_ref\
-    .collection(u'subadministrative_areas').document(u'cook')
-
-chicago_ref = illinois_ref\
-    .collection(u'localities').document(u'chicago')
-
-cook_cty_ref.set({
-    u'name': "Cook",
-})
-
-chicago_ref.set({
-    u'name': "Chicago",
-    u'counties': [cook_cty_ref]
-})
+def show_header():
+    print("\n––------------------------------------------------------------------------------------------------")
+    print("=== Jurisdictions API Manager ====================================================================")
+    print("––------------------------------------------------------------------------------------------------\n")
 
 
+def main():
 
-new_york_ref = db.collection(u'countries').document(u'usa')\
-    .collection(u'administrative_areas').document(u'new york')
+    Configs.config.override({
+        "firebase_admin_key_file": "./FirebaseAdminKey.json",
+    })
 
-new_york_cty_ref = new_york_ref\
-    .collection(u'subadministrative_areas').document(u'new york')
+    add_data_view = Views.add_data_view()
 
-kings_cty_ref = new_york_ref\
-    .collection(u'subadministrative_areas').document(u'kings')
+    show_header()
+    fb_manager = FirebaseClient
 
-new_york_ref = new_york_ref\
-    .collection(u'localities').document(u'new york')
+    while True:
+        action = MainMenu.show()['initial_action']
 
-new_york_cty_ref.set({
-    u'name': "New York",
-})
+        if action == 'Exit':
+            break
 
-kings_cty_ref.set({
-    u'name': "Kings",
-})
+        if action == 'Add new data':
+            clear()
+            add_data_view.execute()
 
-new_york_ref.set({
-    u'name': "New York",
-    u'counties': [new_york_cty_ref, kings_cty_ref]
-})
+    # if action == MainMenu.EXIT.value:
+    #     print("exiting...")
+    #     exit(0)
+    # elif action == MainMenu.ADD.value:
+    #     print("adding...")
+    #     stuff = fbMangager.get_stuff()
+    #     print(stuff)
+    # elif action == MainMenu.MODIFY.value:
+    #     print("modifying...")
+    # elif action == MainMenu.DELETE.value:
+    #     print("deleting...")
+
+    # print(answers['initial_action'])
+    # pprint(action)
 
 
-# try:
-#     doc = doc_ref.get()
-#     if doc.exists:
-#         print(u'Document data: {}'.format(doc.to_dict()))
-#     else:
-#         print(u'No such document!')
-# except google.cloud.exceptions.NotFound:
-#     print(u'No such document!')
+if __name__ == '__main__':
+    main()
